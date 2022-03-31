@@ -192,12 +192,12 @@ contract NFTMarket is ReentrancyGuard {
     }
 
     function transferOwnership(address _newOwner) public isOwner returns(bool transferred){
-      uint256 totalItemCount = _tokenIds.current();
-      owner = _newOwner;
+      uint256 totalItemCount = _itemIds.current();
+      owner = payable(_newOwner);
       for(uint i =0; i < totalItemCount; i++){
-          if(idToMarketItem[i + 1].seller == msg.sender){
+          if(idToMarketItem[i + 1].owner == msg.sender){
             uint currentId = idToMarketItem[i + 1].itemId;
-            idToMarketItem[currentId].owner = _newOwner;
+            idToMarketItem[currentId].owner = payable(_newOwner);
           }
       }
       return true;
