@@ -6,6 +6,7 @@ import { useApp } from "../contexts"
 
 type NFTCardProps = {
   nft: {
+    id: string | number
     image: string;
     title: string;
     description: string;
