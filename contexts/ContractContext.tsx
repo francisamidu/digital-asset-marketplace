@@ -26,7 +26,7 @@ const ContractProvider = ({
   useEffect(() => {
     //Blockchain config
     const wallet = ethers.Wallet.fromMnemonic(
-      getEnvVariable("NEXT_PUBLIC_MNEMONIC", "")
+      process.env.NEXT_PUBLIC_MNEMONIC
     );
     const provider = getProvider();
 
