@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "E:\\Genius\\Dev\\web\\blockchain-projects\\digital-asset-marketplace\\contracts\\NFT.sol": {
-      "lastModificationDate": 1648571929611,
-      "contentHash": "07736062922d507b346fb6b8b7dbfd1d",
+      "lastModificationDate": 1648757224293,
+      "contentHash": "a32a71610a7723ed205a11a59c03d044",
       "sourceName": "contracts/NFT.sol",
       "solcConfig": {
         "version": "0.8.11",
@@ -31,7 +31,8 @@
       "imports": [
         "@openzeppelin/contracts/token/ERC721/ERC721.sol",
         "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
-        "@openzeppelin/contracts/utils/Counters.sol"
+        "@openzeppelin/contracts/utils/Counters.sol",
+        "hardhat/console.sol"
       ],
       "versionPragmas": [
         "0.8.11"
@@ -442,8 +443,8 @@
       ]
     },
     "E:\\Genius\\Dev\\web\\blockchain-projects\\digital-asset-marketplace\\contracts\\NFTMarket.sol": {
-      "lastModificationDate": 1648743401078,
-      "contentHash": "0b8b06784d9569de93c45186baab2655",
+      "lastModificationDate": 1648760416865,
+      "contentHash": "403e3250f01dec8a8f120c55247a1033",
       "sourceName": "contracts/NFTMarket.sol",
       "solcConfig": {
         "version": "0.8.11",
@@ -514,6 +515,41 @@
       ],
       "artifacts": [
         "ReentrancyGuard"
+      ]
+    },
+    "E:\\Genius\\Dev\\web\\blockchain-projects\\digital-asset-marketplace\\node_modules\\hardhat\\console.sol": {
+      "lastModificationDate": 1646607549456,
+      "contentHash": "cc4777addd464ea56fa35b1c45df0591",
+      "sourceName": "hardhat/console.sol",
+      "solcConfig": {
+        "version": "0.8.11",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "console"
       ]
     }
   }

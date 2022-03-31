@@ -19,7 +19,10 @@ const ContractProvider = ({
 }: PropsWithChildren<Partial<ReactNode>>) => {
   const { setNfts } = useAssets();
   const { account, name, darkMode, year, setData } = useApp();
+  const [nftMarketContract,setNftMarketContract] = useState(null)
+  const [nftContract,setNftContract] = useState(null)
 
+ 
   useEffect(() => {
     //Blockchain config
     const provider = getProvider();
@@ -29,9 +32,49 @@ const ContractProvider = ({
       nftMarketABI,
       provider
     );
-    setAppFields();
-    loadNFTs(nftMarketContract, nftContract);
+    setNftContract(nftContract)
+    setNftMarketContract(nftMarketContract)
+    setAppFields();    
   }, [undefined]);
+
+  useEffect(() => {
+    if(nftContract && nftMarketContract){
+      loadNFTs(nftMarketContract, nftContract);          
+    }
+  },[nftContract,nftMarketContract])
+
+  const fetchMarketItems = async () => {
+    try{
+      let itemIds = await nftMarketContract?._itemIds()
+      itemIds = itemIds?.toString()
+      console.log(itemIds)
+      const items = []
+
+      for (let id = 0; id <= itemIds; id++) {
+        if (id) {        
+          let item = await nftMarketContract?.idToMarketItem(id);        
+          const tokenUri = await nftContract?.tokenURI(i.tokenId);
+          const request = await fetch(tokenUri);
+          const price = ethers.utils.parseUnits(i.price.toString(), "ether");          
+          const newItem = {
+            image: meta.image,
+            title: meta.name,
+            description: meta.description,
+            price,
+            tokenId: item.tokenId.toString(),
+            owner:item.owner,
+            seller:item.seller,
+            sold:item.sold,
+            tokenUri,
+          };
+          items.push(newItem);
+        }
+      }
+      return items
+    }catch(error) {
+      throw error
+    }
+  }
 
   const setAppFields = async () => {
     const modal = new Modal();
@@ -47,36 +90,30 @@ const ContractProvider = ({
     });
   };
 
-  const loadNFTs = async (market, nftContract) => {
+  const loadNFTs = async (type = "my-assets") => {
     try {
-      let data = await market.fetchMarketItems();
-      const items = await Promise.all(
-        data.map(async (i) => {
-          try {
-            const tokenUri = await nftContract.tokenURI(i.tokenId);
-            const request = await fetch(tokenUri);
-            const meta = await request.json();
-            const price = ethers.utils.parseUnits(i.price.toString(), "ether");
-            let item = {
-              id: i.tokenId.toNumber(),
-              price: price.toString(),
-              seller: i.seller,
-              image: meta.image,
-              title: meta.name,
-              description: meta.description,
-            };
-            return item;
-          } catch (error) {
-            console.log(error);
-            toast.error("Something went wrong. Check your internet");
-            return {};
-          }
-        })
-      );
-      setNfts(items);
+      switch(type){
+        case 'created-assets':{
+          const items = await fetchMarketItems()
+          setNfts(items);
+          return items
+        }
+        case 'market-assets':{
+          let items = await fetchMarketItems()
+          items.filter(item => item.owner == "0x0")
+          setNfts(items);
+          return items
+        }
+        default:{
+          let items = await fetchMarketItems()
+          items.filter(item => item.owner == account)
+          setNfts(items);
+          return items
+        }
+      }
     } catch (error) {
       toast.error("Something went wrong. Check your internet");
-      console.log(market);
+      console.log(error);
     }
   };
 
@@ -88,4 +125,4 @@ const ContractProvider = ({
 };
 const useContract = () => useContext(ContractContext);
 export { ContractProvider, useContract };
-export default {};
+

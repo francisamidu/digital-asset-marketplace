@@ -21,13 +21,13 @@ const Assets = () => {
       value: price,
     });
     await transaction.wait();
-    loadNFTs();
+    loadNFTs("market-assets");
   };
   useEffect(() => {
     loadNFTs();
   }, [undefined]);
   return (
-    <section className={`${darkMode && "bg-[#040D20]"}`}>
+    <section className={`${darkMode && "bg-[#040D20]"} min-h-screen`}>
      <NFTList page="assets" buyNft={buyNft} />;
     </section>
   );

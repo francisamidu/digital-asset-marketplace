@@ -4,6 +4,7 @@ pragma solidity 0.8.11;
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "hardhat/console.sol";
 
 contract NFT is ERC721URIStorage  {
     using Counters for Counters.Counter;
@@ -14,14 +15,18 @@ contract NFT is ERC721URIStorage  {
         contractAddress = marketplaceAddress;
     }
 
-    function createToken(string memory tokenURI) public returns (uint tokenId) {
+    function createToken(string memory _tokenURI) public returns (uint tokenId) {
         _tokenIds.increment();
         uint256 newTokenId = _tokenIds.current();
 
         _safeMint(msg.sender, newTokenId);
-        _setTokenURI(newTokenId, tokenURI);
+        _setTokenURI(newTokenId, _tokenURI);
         setApprovalForAll(contractAddress, true);
         return newTokenId;
+    }
+
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        return super.tokenURI(tokenId);
     }
 
 }

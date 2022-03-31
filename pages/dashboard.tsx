@@ -6,41 +6,15 @@ import { nftAddress, nftMarketAddress } from "../config";
 import NFT from "../artifacts/contracts/NFT.sol/NFT.json";
 import Market from "../artifacts/contracts/NFTMarket.sol/NFTMarket.json";
 import { ethers } from "ethers";
+import {useContract} from "../contexts"
 
 const Dashboard = () => {
+  const { loadNFTs } = useContract();
   const [assets, setAssets] = useState([]);
   const [soldAssets, setSoldAssets] = useState([]);
-  const noItems = assets.length + soldAssets.length
-  console.log(noItems)
+  const noItems = assets.length + soldAssets.length  
   const loadAssets = async () => {
-    const modal = new Modal();
-    const connection = await modal.connect();
-    const provider = new ethers.providers.Web3Provider(connection);
-    const signer = provider.getSigner();
-    let nftContract = new ethers.Contract(nftAddress, NFT.abi, signer);
-    let marketContract = new ethers.Contract(
-      nftMarketAddress,
-      Market.abi,
-      signer
-    );
-    let data = await marketContract.fetchItemsCreated();
-    const items = await Promise.all(
-      data.map(async (i) => {
-        const tokenUri = await nftContract.tokenURI(i.tokenId);
-        const request = await fetch(tokenUri);
-        const meta = await request.json();
-        const price = ethers.utils.parseUnits(i.price.toString(), "ether");
-        let item = {
-          id: i.tokenId.toNumber(),
-          price: price.toString(),
-          seller: i.seller,
-          image: meta.image,
-          sold: i.sold,
-          owner: i.owner,
-        };
-        return item;
-      })
-    );
+    const items = await loadNFTs("created-assets")
     setAssets(items);
     setSoldAssets(items.filter((i) => !!i.sold));
   };

@@ -19,7 +19,7 @@ const client = ipfsClient({
 });
 
 const CreateItem = () => {
-  const {darkMode} = useApp()
+  const {account,darkMode} = useApp()
   const [file, setFile] = useState(null);
   const [item, setItem] = useState({
     name: "",
@@ -30,13 +30,22 @@ const CreateItem = () => {
   const uploadImage = async () => {
     if (file) {
       try {
-        const request = await client.add(file);
-        const url = `https://ipfs.infura.io/ipfs/${request.path}`;
+        const url = URL.createObjectURL(file)
         setItem({ ...item, image: url });
+        await uploadNft()
       } catch (error) {
+        console.log(error)
         toast.error("Whooops!! Image upload error");
         return;
       }
+      // try {
+      //   const request = await client.add(file);
+      //   const url = `https://ipfs.infura.io/ipfs/${request.path}`;
+      //   setItem({ ...item, image: url });
+      // } catch (error) {
+      //   toast.error("Whooops!! Image upload error");
+      //   return;
+      // }
     } else {
       toast.error("Please provide an image");
       return;
@@ -45,13 +54,23 @@ const CreateItem = () => {
   const uploadNft = async () => {
     if (typeof item.image === "string") {
       try {
-        const data = JSON.stringify(item);
-        const request = await client.add(data);
-        return `https://ipfs.infura.io/ipfs/${request.path}`;
+        // const data = JSON.stringify(item);
+        // const request = await client.add(data);
+        // return `https://ipfs.infura.io/ipfs/${request.path}`;
+        await createSale("http://localhost:3000/item")
       } catch (error) {
+        console.log(error)
         toast.error("Error uploading file");
         return "";
       }
+      // try {
+      //   const data = JSON.stringify(item);
+      //   const request = await client.add(data);
+      //   return `https://ipfs.infura.io/ipfs/${request.path}`;
+      // } catch (error) {
+      //   toast.error("Error uploading file");
+      //   return "";
+      // }
     } else {
       toast.error("Please provide all the fields required");
       return "";
@@ -59,31 +78,32 @@ const CreateItem = () => {
   };
   const createSale = async (uploadedUrl: string) => {
     try {
-      const modal = new Modal();
-      const connection = await modal.connect();
-      const provider = new ethers.providers.Web3Provider(connection);
-      const signer = provider.getSigner();
-      let contract = new ethers.Contract(nftAddress, NFT.abi, signer);
-      let transaction = await contract.createToken(uploadedUrl);
-      const tx = await transaction.wait();
+        const modal = new Modal();
+        const connection = await modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+        let contract = new ethers.Contract(nftAddress, NFT.abi, signer);
+        let transaction = await contract.createToken(uploadedUrl);
+        const tx = await transaction.wait();
 
-      const tokenId = tx.events[0].args['tokenId'].toNumber();
-      console.log(tokenId)
-      const price = await ethers.utils.parseUnits(
-        item.price.toString(),
-        "ether"
-      );
-      contract = new ethers.Contract(nftMarketAddress, Market.abi, signer);
-      const listingPrice = await contract.getListingPrice();
+        const tokenId = tx.events[0].args['tokenId'].toNumber();        
+        const price = await ethers.utils.parseUnits(
+          item.price.toString(),
+          "ether"
+        );
+        contract = new ethers.Contract(nftMarketAddress, Market.abi, signer);
+        const listingPrice = await contract.getListingPrice();
 
-      transaction = await contract.createMarketItem(
-        nftAddress,
-        tokenId,
-        price,
-        {
-          value: listingPrice,
-        }
-      );
+        transaction = await contract.createMarketItem(
+          nftAddress,
+          tokenId,
+          price,
+          {
+            value: listingPrice,
+          }
+        );
+        console.log(transaction)
+      
       toast.success("Hooray!!NFT minted");
       // router.push("/assets");
     } catch (error) {
@@ -91,12 +111,10 @@ const CreateItem = () => {
       toast.error("Sorry something wrong happened");
       return
     }
-  };
+  }
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault();    
     await uploadImage();
-    const uploadedUrl = await uploadNft();
-    createSale(uploadedUrl);
     setItem({
       name:'',
       description:'',

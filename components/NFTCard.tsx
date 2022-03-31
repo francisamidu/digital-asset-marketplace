@@ -18,8 +18,8 @@ const NFTCard = ({ nft, buyNft, page = "index" }: NFTCardProps) => {
   const { id,image, description, title, price } = nft;
   const { darkMode } = useApp()
   return (
-    <div className={`p-4 shadow min-w-300 flex-1 max-w-320 sm:my-4 sm:mr-4 my-0 mr-0 rounded-md bg-[#ee] ${darkMode
-     && "bg-[#02000f"}`}>
+    <div className={`p-4 shadow min-w-300 flex-1 max-w-320 sm:my-4 sm:mr-4 my-0 mr-0 rounded-md bg-[#ee] 
+      ${darkMode && "bg-[#0F0F2B] text-white"}`}>
       <Image
         src={image}
         layout="responsive"
@@ -48,7 +48,7 @@ const NFTCard = ({ nft, buyNft, page = "index" }: NFTCardProps) => {
           <h1 className="font-bold text-2xl capitalize color-dark-blue">
             {title}
           </h1>
-          <p className="color-teal font-bold">{price} Eth</p>
+          <p className={`color-teal font-bold ${darkMode && "text-[#ddd]"}`}>{price} Eth</p>
         </div>
       )}
     </div>
