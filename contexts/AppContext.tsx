@@ -23,7 +23,7 @@ const AppContext = createContext<{
   setData: Dispatch<SetStateAction<AppValues>>;
 }>({
   account: "",
-  balance:0,
+  balance:"0",
   name: "",
   year: 0,
   darkMode: false,
