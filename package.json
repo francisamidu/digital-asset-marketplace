@@ -1,0 +1,41 @@
+{
+	"name": "monstercrypt",
+	"description": "MonsterCrypt - Digital asset marketplace",
+	"main": ".next/server/pages/_app.js",
+	"author": "Francis Amidu",
+	"license": "MIT",
+	"dependencies": {
+		"@nomiclabs/hardhat-ethers": "^2.0.5",
+		"@nomiclabs/hardhat-waffle": "^2.0.3",
+		"@openzeppelin/contracts": "^4.5.0",
+		"@types/node": "*",
+		"@types/react": "*",
+		"chai": "^4.3.6",
+		"date-fns": "^2.28.0",
+		"ethereum-waffle": "^3.4.0",
+		"ethers": "^5.5.4",
+		"ipfs-http-client": "^56.0.1",
+		"millify": "^4.0.0",
+		"next": "*",
+		"react": "*",
+		"react-dom": "^*",
+		"react-icons": "*",
+		"react-toastify": "^8.2.0",
+		"sass": "^1.45.1",
+		"tailwindcss": "*",
+		"tsconfig-paths-webpack-plugin": "*",
+		"typescript": "*",
+		"web3modal": "^1.9.5"
+	},
+	"devDependencies": {
+		"@types/react-dom": "^17.0.11",
+		"autoprefixer": "*",
+		"hardhat": "^2.9.1",
+		"postcss": "*"
+	},
+	"scripts": {
+		"serve": "next",
+		"build": "next build",
+		"start": "next start"
+	}
+}

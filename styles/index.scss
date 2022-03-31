@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #3f4b99;
+  --color-primary-secondary: #4a58b4;
+  --color-primary-dark: #090b16;
+}
+
+.color-teal {
+  color: var(--color-primary);
+}
+
+.color-dark-primary {
+  color: var(--color-dark-primary);
+}
+
+.color-primary-secondary {
+  color: var(--color-primary-secondary);
+}
+* {
+  font-family: "FreeSans";
+}
+
+a {
+  outline: none !important;
+}
+.link-active {
+  &:after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    z-index: 20;
+    background-color: var(--color-primary);
+    transition: background-color 0.75s linear;
+  }
+}
+.intro-image {
+  background-image: url("/29932.jpg");
+  background-size: cover;
+  background-position: center;
+}
+.feature{
+  &:hover{
+    transition: .5s ease-out;
+    transform:scale(1.1);
+  }
+}
