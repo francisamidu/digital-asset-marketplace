@@ -47,24 +47,24 @@ const ContractProvider = ({
     try{
       let itemIds = await nftMarketContract?._itemIds()
       itemIds = itemIds?.toString()
-      console.log(itemIds)
       const items = []
 
       for (let id = 0; id <= itemIds; id++) {
         if (id) {        
-          let item = await nftMarketContract?.idToMarketItem(id);        
-          const tokenUri = await nftContract?.tokenURI(i.tokenId);
+          let item = await nftMarketContract?.idToMarketItem(id);  
+          const tokenUri = await nftContract?.tokenURI(item.tokenId);
           const request = await fetch(tokenUri);
-          const price = ethers.utils.parseUnits(i.price.toString(), "ether");          
+          const meta = await request.json()
+          const price = ethers.utils.parseUnits(item.price.toString(), "ether");          
           const newItem = {
             image: meta.image,
             title: meta.name,
             description: meta.description,
             price,
             tokenId: item.tokenId.toString(),
-            owner:item.owner,
-            seller:item.seller,
-            sold:item.sold,
+            owner: item.owner,
+            seller: item.seller,
+            sold: item.sold,
             tokenUri,
           };
           items.push(newItem);

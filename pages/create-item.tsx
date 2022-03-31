@@ -30,7 +30,7 @@ const CreateItem = () => {
   const uploadImage = async () => {
     if (file) {
       try {
-        const url = URL.createObjectURL(file)
+        const url = `https://ipfs.infura.io/ipfs/${request.path}`;
         setItem({ ...item, image: url });
         await uploadNft()
       } catch (error) {
@@ -38,14 +38,6 @@ const CreateItem = () => {
         toast.error("Whooops!! Image upload error");
         return;
       }
-      // try {
-      //   const request = await client.add(file);
-      //   const url = `https://ipfs.infura.io/ipfs/${request.path}`;
-      //   setItem({ ...item, image: url });
-      // } catch (error) {
-      //   toast.error("Whooops!! Image upload error");
-      //   return;
-      // }
     } else {
       toast.error("Please provide an image");
       return;
@@ -54,26 +46,17 @@ const CreateItem = () => {
   const uploadNft = async () => {
     if (typeof item.image === "string") {
       try {
-        // const data = JSON.stringify(item);
-        // const request = await client.add(data);
-        // return `https://ipfs.infura.io/ipfs/${request.path}`;
-        await createSale("http://localhost:3000/item")
+        const data = JSON.stringify(item);
+        const request = await client.add(data);
+        await createSale(`https://ipfs.infura.io/ipfs/${request.path}`)
       } catch (error) {
         console.log(error)
         toast.error("Error uploading file");
-        return "";
-      }
-      // try {
-      //   const data = JSON.stringify(item);
-      //   const request = await client.add(data);
-      //   return `https://ipfs.infura.io/ipfs/${request.path}`;
-      // } catch (error) {
-      //   toast.error("Error uploading file");
-      //   return "";
-      // }
+        return ;
+      }      
     } else {
       toast.error("Please provide all the fields required");
-      return "";
+      return;
     }
   };
   const createSale = async (uploadedUrl: string) => {

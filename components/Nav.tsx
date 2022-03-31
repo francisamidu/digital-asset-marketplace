@@ -109,8 +109,7 @@ const Nav = () => {
           <div className="sm:flex flex-row items-center">
             <span className={`font-bold mr-6 ${darkMode && "text-white"}`}>
               {millify(
-                balance > 10000 ? Number(String(balance).slice(0, 4)) : balance
-              )}{" "}
+                Number(String(balance).slice(0,6)))}{" "}...
               ETH
             </span>
             <span className="font-bold text-[#4552A8] bg-[#eee] rounded-md py-2 p-3">

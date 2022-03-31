@@ -14,9 +14,13 @@ const Dashboard = () => {
   const [soldAssets, setSoldAssets] = useState([]);
   const noItems = assets.length + soldAssets.length  
   const loadAssets = async () => {
-    const items = await loadNFTs("created-assets")
-    setAssets(items);
-    setSoldAssets(items.filter((i) => !!i.sold));
+    try{
+      const items = await loadNFTs("created-assets")
+      setAssets(items);
+      setSoldAssets(items.filter((i) => !!i.sold));
+    }catch(error){
+      console.log(error)
+    }
   };
   useEffect(() => {
     loadAssets();
