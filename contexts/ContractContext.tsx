@@ -8,43 +8,44 @@ import React, {
 } from "react";
 import Modal from "web3modal";
 import { ethers } from "ethers";
-import { nftAddress, nftMarketAddress } from "../config";
-import { useAssets,useApp } from ".";
-import { toast } from "react-toastify"
+import { nftAddress, nftMarketAddress, nftABI, nftMarketABI } from "../config";
+import { useAssets, useApp } from ".";
+import { toast } from "react-toastify";
+import { getProvider } from "../helpers";
 
 const ContractContext = createContext(null);
 const ContractProvider = ({
   children,
 }: PropsWithChildren<Partial<ReactNode>>) => {
   const { setNfts } = useAssets();
-  const { account,name,darkMode,year,setData } = useApp()
-  const nftABI = require("../artifacts/contracts/NFT.sol/NFT.json");
-  const nftMarketABI = require("../artifacts/contracts/NFTMarket.sol/NFTMarket.json");
+  const { account, name, darkMode, year, setData } = useApp();
+
   useEffect(() => {
     //Blockchain config
-    const provider = new ethers.providers.JsonRpcProvider();
-    const nftContract = new ethers.Contract(nftAddress, nftABI.abi, provider);
+    const provider = getProvider();
+    const nftContract = new ethers.Contract(nftAddress, nftABI, provider);
     const nftMarketContract = new ethers.Contract(
       nftMarketAddress,
-      nftMarketABI.abi,
+      nftMarketABI,
       provider
     );
-    setAppFields()
+    setAppFields();
     loadNFTs(nftMarketContract, nftContract);
   }, [undefined]);
 
-  const setAppFields = async() => {
+  const setAppFields = async () => {
     const modal = new Modal();
     const connection = await modal.connect();
     const walletProvider = new ethers.providers.Web3Provider(connection);
-    const balance = await walletProvider.getBalance(connection.selectedAddress)
+    const balance = await walletProvider.getBalance(connection.selectedAddress);
     setData({
-      account:connection.selectedAddress,
+      account: connection.selectedAddress,
       balance: balance.toString(),
       name,
       darkMode,
-    })
-  }
+      year,
+    });
+  };
 
   const loadNFTs = async (market, nftContract) => {
     try {
@@ -67,15 +68,15 @@ const ContractProvider = ({
             return item;
           } catch (error) {
             console.log(error);
-            toast.error("Something went wrong. Check your internet")
+            toast.error("Something went wrong. Check your internet");
             return {};
           }
         })
       );
       setNfts(items);
     } catch (error) {
-      toast.error("Something went wrong. Check your internet")
-      console.log(market)
+      toast.error("Something went wrong. Check your internet");
+      console.log(market);
     }
   };
 
