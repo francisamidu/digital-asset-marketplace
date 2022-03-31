@@ -11,7 +11,7 @@ import { ethers } from "ethers";
 import { nftAddress, nftMarketAddress, nftABI, nftMarketABI } from "../config";
 import { useAssets, useApp } from ".";
 import { toast } from "react-toastify";
-import { getProvider } from "../helpers";
+import { getProvider,getEnvVariable } from "../helpers";
 
 const ContractContext = createContext(null);
 const ContractProvider = ({
@@ -25,12 +25,17 @@ const ContractProvider = ({
  
   useEffect(() => {
     //Blockchain config
+    const wallet = ethers.Wallet.fromMnemonic(
+      getEnvVariable("NEXT_PUBLIC_MNEMONIC", "")
+    );
     const provider = getProvider();
-    const nftContract = new ethers.Contract(nftAddress, nftABI, provider);
+
+    const signer = wallet.connect(provider);
+    const nftContract = new ethers.Contract(nftAddress, nftABI, signer);
     const nftMarketContract = new ethers.Contract(
       nftMarketAddress,
       nftMarketABI,
-      provider
+      signer
     );
     setNftContract(nftContract)
     setNftMarketContract(nftMarketContract)
