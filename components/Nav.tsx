@@ -4,7 +4,7 @@ import { useApp } from "../contexts";
 import Link from "next/link";
 import { IoMenu as IMenu } from "react-icons/io5";
 import { IoIosMoon as Moon } from "react-icons/io";
-import millify from "millify"
+import millify from "millify";
 
 const Nav = () => {
   const [links, setLinks] = useState([
@@ -39,7 +39,15 @@ const Nav = () => {
       text: "Dashboard",
     },
   ]);
-  const { account,balance,name,darkMode,year, setData } = useApp();
+  const {
+    account,
+    balance: accountBalance,
+    name,
+    darkMode,
+    year,
+    setData,
+  } = useApp();
+  const balance = Number(accountBalance);
   const setLinkState = (id: string) => {
     setLinks(
       links.map((link) => {
@@ -59,9 +67,9 @@ const Nav = () => {
   const [showMenu, setShowMenu] = useState(false);
   return (
     <section
-      className={`bg-white ${
-        darkMode && "bg-[#040B1A]"
-      } ${!darkMode && "shadow shadow-[#eee]"} fixed top-0 left-0 w-full z-10 sm:py-0 py-1`}
+      className={`bg-white ${darkMode && "bg-[#040B1A]"} ${
+        !darkMode && "shadow shadow-[#eee]"
+      } fixed top-0 left-0 w-full z-10 sm:py-0 py-1`}
     >
       <div className="md:max-w-screen-xl md:mx-auto relative">
         <nav className="flex flex-row items-center justify-between py-[0.3rem] px-6">
@@ -83,7 +91,7 @@ const Nav = () => {
             ))}
           </div>
           {showMenu && (
-            <div className="flex flex-col bg-white z-index-10 absolute top-10 right-0 p-4 shadow rounded-md shadow transition-all duration-200">
+            <div className="flex flex-col bg-white z-index-10 absolute top-10 right-0 p-4 shadow rounded-md transition-all duration-200">
               {links.map((link) => (
                 <Link href={link.path} key={link.id}>
                   <a
@@ -98,24 +106,29 @@ const Nav = () => {
               ))}
             </div>
           )}
-          <div
-            className="sm:flex flex-row items-center"
-          >
+          <div className="sm:flex flex-row items-center">
             <span className={`font-bold mr-6 ${darkMode && "text-white"}`}>
-              {millify(balance > 10000 ? balance.slice(0,4) : balance)} ETH
+              {millify(
+                balance > 10000 ? Number(String(balance).slice(0, 4)) : balance
+              )}{" "}
+              ETH
             </span>
             <span className="font-bold text-[#4552A8] bg-[#eee] rounded-md py-2 p-3">
               {trimmedAddress}
             </span>
             <Moon
-            className={`ml-3 text-2xl cursor-pointer ${darkMode && "text-white"}`}
-            onClick={() => setData({
-              account,
-              balance,
-              name,
-              darkMode: !darkMode,
-              year
-            })}
+              className={`ml-3 text-2xl cursor-pointer ${
+                darkMode && "text-white"
+              }`}
+              onClick={() =>
+                setData({
+                  account,
+                  balance: accountBalance,
+                  name,
+                  darkMode: !darkMode,
+                  year,
+                })
+              }
             />
           </div>
           <IMenu
