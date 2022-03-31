@@ -11,7 +11,7 @@ import { ethers } from "ethers";
 import { nftAddress, nftMarketAddress, nftABI, nftMarketABI } from "../config";
 import { useAssets, useApp } from ".";
 import { toast } from "react-toastify";
-import { getProvider,getEnvVariable } from "../helpers";
+import { getProvider } from "../helpers";
 
 const ContractContext = createContext(null);
 const ContractProvider = ({
