@@ -10,6 +10,10 @@ module.exports = {
     hardhat: {
       chainId: 1337,
     },
+    ropsten: {
+      url: `https://ropsten.infura.io/v3/${infuraId}`,
+      accounts: [`0x${privateKey}`],
+    },
     mumbai: {
       url: `https://polygon-mumbai.infura.io/v3/${infuraId}`,
       accounts: [`0x${privateKey}`],
