@@ -30,6 +30,7 @@ const CreateItem = () => {
   const uploadImage = async () => {
     if (file) {
       try {
+        const request = await client.add(file);
         const url = `https://ipfs.infura.io/ipfs/${request.path}`;
         setItem({ ...item, image: url });
         await uploadNft()

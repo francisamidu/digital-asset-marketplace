@@ -44,7 +44,7 @@ const ContractProvider = ({
 
   useEffect(() => {
     if(nftContract && nftMarketContract){
-      loadNFTs(nftMarketContract, nftContract);          
+      loadNFTs();          
     }
   },[nftContract,nftMarketContract])
 

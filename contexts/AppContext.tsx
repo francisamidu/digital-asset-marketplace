@@ -35,7 +35,7 @@ export const AppContextProvider = ({
 }: PropsWithChildren<ReactNode>) => {
   const [data, setData] = useState({
     account: "",
-    balance:0,
+    balance:"0",
     name: "MonsterCrypt",
     darkMode: false,
     year: new Date().getFullYear(),
