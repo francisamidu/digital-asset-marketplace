@@ -9,17 +9,17 @@ import { nftAddress, nftMarketAddress } from "../config";
 import NFT from "../artifacts/contracts/NFT.sol/NFT.json";
 import Market from "../artifacts/contracts/NFTMarket.sol/NFTMarket.json";
 import { toast } from "react-toastify";
-import {useApp} from "../contexts"
+import { useApp } from "../contexts";
 
 const client = ipfsClient({
-  apiPath:'/api/v0',
-  host:'ipfs.infura.io',
-  port:5001,
-  protocol:'https'
+  apiPath: "/api/v0",
+  host: "ipfs.infura.io",
+  port: 5001,
+  protocol: "https",
 });
 
 const CreateItem = () => {
-  const {account,darkMode} = useApp()
+  const { account, darkMode } = useApp();
   const [file, setFile] = useState(null);
   const [item, setItem] = useState({
     name: "",
@@ -33,9 +33,9 @@ const CreateItem = () => {
         const request = await client.add(file);
         const url = `https://ipfs.infura.io/ipfs/${request.path}`;
         setItem({ ...item, image: url });
-        await uploadNft()
+        await uploadNft();
       } catch (error) {
-        console.log(error)
+        console.log(error);
         toast.error("Whooops!! Image upload error");
         return;
       }
@@ -49,12 +49,12 @@ const CreateItem = () => {
       try {
         const data = JSON.stringify(item);
         const request = await client.add(data);
-        await createSale(`https://ipfs.infura.io/ipfs/${request.path}`)
+        await createSale(`https://ipfs.infura.io/ipfs/${request.path}`);
       } catch (error) {
-        console.log(error)
+        console.log(error);
         toast.error("Error uploading file");
-        return ;
-      }      
+        return;
+      }
     } else {
       toast.error("Please provide all the fields required");
       return;
@@ -62,52 +62,55 @@ const CreateItem = () => {
   };
   const createSale = async (uploadedUrl: string) => {
     try {
-        const modal = new Modal();
-        const connection = await modal.connect();
-        const provider = new ethers.providers.Web3Provider(connection);
-        const signer = provider.getSigner();
-        let contract = new ethers.Contract(nftAddress, NFT.abi, signer);
-        let transaction = await contract.createToken(uploadedUrl);
-        const tx = await transaction.wait();
+      const modal = new Modal();
+      const connection = await modal.connect();
+      const provider = new ethers.providers.Web3Provider(connection);
+      const signer = provider.getSigner();
+      let contract = new ethers.Contract(nftAddress, NFT.abi, signer);
+      let transaction = await contract.createToken(uploadedUrl);
+      const tx = await transaction.wait();
 
-        const tokenId = tx.events[0].args['tokenId'].toNumber();        
-        const price = await ethers.utils.parseUnits(
-          item.price.toString(),
-          "ether"
-        );
-        contract = new ethers.Contract(nftMarketAddress, Market.abi, signer);
-        const listingPrice = await contract.getListingPrice();
+      const tokenId = tx.events[0].args["tokenId"].toNumber();
+      const price = await ethers.utils.parseUnits(
+        item.price.toString(),
+        "ether"
+      );
+      contract = new ethers.Contract(nftMarketAddress, Market.abi, signer);
+      const listingPrice = await contract.getListingPrice();
 
-        transaction = await contract.createMarketItem(
-          nftAddress,
-          tokenId,
-          price,
-          {
-            value: listingPrice,
-          }
-        );
-        console.log(transaction)
-      
+      transaction = await contract.createMarketItem(
+        nftAddress,
+        tokenId,
+        price,
+        {
+          value: listingPrice,
+        }
+      );
+      console.log(transaction);
       toast.success("Hooray!!NFT minted");
       // router.push("/assets");
     } catch (error) {
       console.log(error);
       toast.error("Sorry something wrong happened");
-      return
+      return;
     }
-  }
+  };
   const handleSubmit = async (event) => {
-    event.preventDefault();    
+    event.preventDefault();
     await uploadImage();
     setItem({
-      name:'',
-      description:'',
-      image:'',
-      price:''
-    })
+      name: "",
+      description: "",
+      image: "",
+      price: "",
+    });
   };
   return (
-    <section className={`flex flex-row items-center justify-center min-h-screen ${darkMode && "bg-[#040D20]"}`}>
+    <section
+      className={`flex flex-row items-center justify-center min-h-screen ${
+        darkMode && "bg-[#040D20]"
+      }`}
+    >
       <form
         className="min-w-[600px] rounded-md shadow bg-white p-5 flex flex-col items-center"
         onSubmit={handleSubmit}
@@ -142,11 +145,16 @@ const CreateItem = () => {
           type="file"
           id="image"
           className="mt-2 rounded-sm w-full py-2 px-2 border-[1px] border-[#eee]"
-          onChange={(event: ChangeEvent<any>) =>
-            setFile(event?.target?.files[0])
-          }
+          onChange={(event: ChangeEvent<any>) => {
+            setFile(event?.target?.files[0]);
+            console.log(event?.target?.value);
+          }}
         />
-        <Button text="Create Digital Asset" type="submit" className="mt-4 w-full" />
+        <Button
+          text="Create Digital Asset"
+          type="submit"
+          className="mt-4 w-full"
+        />
       </form>
     </section>
   );
