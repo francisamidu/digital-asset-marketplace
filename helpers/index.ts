@@ -5,5 +5,5 @@ import AccountHelper from "./AccountsHelper";
 
 export { millify, uid };
 
-export const { formatDate, formatNote } = Formatter;
+export const { formatDate } = Formatter;
 export const { getAccount, getProvider } = AccountHelper;

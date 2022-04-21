@@ -1,13 +1,13 @@
 import { ethers } from "ethers";
 
 class AccountHelper {
-
   // Helper method for fetching a connection provider to the Ethereum network
   static getProvider() {
-    const provider = new ethers.providers.InfuraProvider(
-      "ropsten",
-      process.env.NEXT_PUBLIC_INFURA_ID
-    );
+    const provider = new ethers.providers.JsonRpcProvider();
+    // const provider = new ethers.providers.InfuraProvider(
+    //   "ropsten",
+    //   process.env.NEXT_PUBLIC_INFURA_ID
+    // );
     return provider;
   }
 

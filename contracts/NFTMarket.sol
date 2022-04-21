@@ -25,9 +25,11 @@ contract NFTMarket is ReentrancyGuard {
         uint256 tokenId;
         address payable seller;
         address payable owner;
-        uint256 price;
-        uint createdAt;
+        uint256 price;      
         bool sold;
+        string category;
+        string username;
+        string timestamp;
     }
 
     modifier isOwner{
@@ -43,15 +45,17 @@ contract NFTMarket is ReentrancyGuard {
         uint256 indexed tokenId,
         address payable seller,
         address payable owner,
-        uint256 price,
-        uint createdAt,
-        bool sold
+        uint256 price,       
+        bool sold,
+        string category,
+        string username,
+        string timestamp
     );
 
     event MarketItemSold (
         uint indexed itemId,
         uint256 indexed tokenId,
-        address payable sellers
+        address payable sellers        
     );
 
     event BalanceWithdrawn(address user, uint256 _balance);
@@ -63,7 +67,10 @@ contract NFTMarket is ReentrancyGuard {
     function createMarketItem(
         address nftContractAddress,
         uint256 tokenId,
-        uint256 price
+        uint256 price,
+        string memory _category,
+        string memory _username,
+        string _timestamp
     ) public payable nonReentrant {
         require(price > 0, "Price must be at least 1 wei");
         require(msg.value == listingPrice, "Price must be equal to the listing price");
@@ -78,8 +85,10 @@ contract NFTMarket is ReentrancyGuard {
             payable(msg.sender),
             payable(address(0)),
             price,
-            block.timestamp,
-            false
+            false,
+            _category,
+            _username,
+            _timestamp
         );
 
         IERC721(nftContractAddress).transferFrom(msg.sender, address(this), tokenId);
@@ -91,8 +100,10 @@ contract NFTMarket is ReentrancyGuard {
             payable(msg.sender),
             payable(address(0)),
             price,
-            block.timestamp,
-            false
+            false,
+            _category,
+            _username,
+            _timestamp
         );
     }
 

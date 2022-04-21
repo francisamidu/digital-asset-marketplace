@@ -1,11 +1,12 @@
 type Asset = {
   id: string | number;
-  image: string;
-  description: string;
-  title: string;
-  price: string;
+  tokenId: string | number;
+  seller: string;
+  owner: string;
+  price: string | number;
+  timestamp: Date | string | number;
   sold: boolean;
-  seller?: string;
-  owner?: string;
+  category: string;
+  username: string;
 };
 export default Asset;

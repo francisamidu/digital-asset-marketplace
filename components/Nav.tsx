@@ -47,7 +47,9 @@ const Nav = () => {
     year,
     setData,
   } = useApp();
-  const balance = Number(accountBalance);
+  const balance = Number(
+    accountBalance.length > 5 ? accountBalance.slice(0, 5) : accountBalance
+  );
   const setLinkState = (id: string) => {
     setLinks(
       links.map((link) => {
@@ -108,9 +110,7 @@ const Nav = () => {
           )}
           <div className="sm:flex flex-row items-center">
             <span className={`font-bold mr-6 ${darkMode && "text-white"}`}>
-              {millify(
-                Number(String(balance).slice(0,6)))}{" "}...
-              ETH
+              {balance.toString().length > 4 ? millify(balance) : balance} ETH
             </span>
             <span className="font-bold text-[#4552A8] bg-[#eee] rounded-md py-2 p-3">
               {trimmedAddress}

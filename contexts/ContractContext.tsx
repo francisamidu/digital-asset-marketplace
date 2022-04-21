@@ -11,7 +11,7 @@ import { ethers } from "ethers";
 import { nftAddress, nftMarketAddress, nftABI, nftMarketABI } from "../config";
 import { useAssets, useApp } from ".";
 import { toast } from "react-toastify";
-import { getProvider } from "../helpers";
+import { formatDate } from "../helpers";
 
 const ContractContext = createContext(null);
 const ContractProvider = ({
@@ -19,78 +19,106 @@ const ContractProvider = ({
 }: PropsWithChildren<Partial<ReactNode>>) => {
   const { setNfts } = useAssets();
   const { account, name, darkMode, year, setData } = useApp();
-  const [nftMarketContract,setNftMarketContract] = useState(null)
-  const [nftContract,setNftContract] = useState(null)
+  const [nftMarketContract, setNftMarketContract] = useState(null);
+  const [nftContract, setNftContract] = useState(null);
 
- 
   useEffect(() => {
     //Blockchain config
-    console.log(process.env)
-    console.log(process.env.PUBLIC_MNEMONIC)
-    const wallet = ethers.Wallet.fromMnemonic(
-      process.env.NEXT_PUBLIC_MNEMONIC
-    );
-    const provider = getProvider();
+    makeConnection().then((res) => setAppFields(res));
+  }, [undefined]);
 
-    const signer = wallet.connect(provider);
+  useEffect(() => {
+    if (nftContract && nftMarketContract) {
+      loadNFTs();
+    }
+  }, [nftContract, nftMarketContract]);
+
+  const fetchMarketItems = async () => {
+    try {
+      let itemIds = await nftMarketContract?._itemIds();
+      itemIds = itemIds?.toString();
+      const items = [];
+
+      for (let id = 0; id <= itemIds; id++) {
+        if (id) {
+          let item = await nftMarketContract?.idToMarketItem(id);
+          // const tokenUri = await nftContract?.tokenURI(item.tokenId);
+          // const request = await fetch(tokenUri);
+          // const meta = await request.json();
+          const price = ethers.utils.formatEther(item.price.toString());
+          const newItem = {
+            category: item.category,
+            image: "/9814.jpeg",
+            // image: meta.image,
+            name: "My NFT",
+            // description: meta.description,
+            price,
+            tokenId: item.tokenId.toString(),
+            id: item.tokenId.toString(),
+            owner: item.owner,
+            seller: item.seller,
+            sold: item.sold,
+            timestamp: formatDate(item.timestamp.toString()),
+            username: item.username,
+            // tokenUri,
+          };
+          items.push(newItem);
+        }
+        // if (id) {
+        //   let item = await nftMarketContract?.idToMarketItem(id);
+        //   const tokenUri = await nftContract?.tokenURI(item.tokenId);
+        //   const request = await fetch(tokenUri);
+        //   const meta = await request.json();
+        //   const price = ethers.utils.parseUnits(item.price.toString(), "ether");
+        //   const newItem = {
+        //     category: item.category,
+        //     image: meta.image,
+        //     name: meta.name,
+        //     description: meta.description,
+        //     price,
+        //     tokenId: item.tokenId.toString(),
+        //     owner: item.owner,
+        //     seller: item.seller,
+        //     sold: item.sold,
+        //     timestamp: formatDate(new Date(item.timestamp)),
+        //     username: item.username,
+        //     tokenUri,
+        //   };
+        //   items.push(newItem);
+        // }
+      }
+      return items;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const makeConnection = async () => {
+    const modal = new Modal();
+    const connection = await modal.connect();
+    const walletProvider = new ethers.providers.Web3Provider(connection);
+    const signer = walletProvider.getSigner();
     const nftContract = new ethers.Contract(nftAddress, nftABI, signer);
     const nftMarketContract = new ethers.Contract(
       nftMarketAddress,
       nftMarketABI,
       signer
     );
-    setNftContract(nftContract)
-    setNftMarketContract(nftMarketContract)
-    setAppFields();    
-  }, [undefined]);
+    setNftContract(nftContract);
+    setNftMarketContract(nftMarketContract);
+    return {
+      connection,
+      walletProvider,
+    };
+  };
 
-  useEffect(() => {
-    if(nftContract && nftMarketContract){
-      loadNFTs();          
-    }
-  },[nftContract,nftMarketContract])
-
-  const fetchMarketItems = async () => {
-    try{
-      let itemIds = await nftMarketContract?._itemIds()
-      itemIds = itemIds?.toString()
-      const items = []
-
-      for (let id = 0; id <= itemIds; id++) {
-        if (id) {        
-          let item = await nftMarketContract?.idToMarketItem(id);  
-          const tokenUri = await nftContract?.tokenURI(item.tokenId);
-          const request = await fetch(tokenUri);
-          const meta = await request.json()
-          const price = ethers.utils.parseUnits(item.price.toString(), "ether");          
-          const newItem = {
-            image: meta.image,
-            title: meta.name,
-            description: meta.description,
-            price,
-            tokenId: item.tokenId.toString(),
-            owner: item.owner,
-            seller: item.seller,
-            sold: item.sold,
-            tokenUri,
-          };
-          items.push(newItem);
-        }
-      }
-      return items
-    }catch(error) {
-      throw error
-    }
-  }
-
-  const setAppFields = async () => {
-    const modal = new Modal();
-    const connection = await modal.connect();
-    const walletProvider = new ethers.providers.Web3Provider(connection);
-    const balance = await walletProvider.getBalance(connection.selectedAddress);
+  const setAppFields = async ({ walletProvider, connection }) => {
+    let balance: any = await walletProvider.getBalance(
+      connection.selectedAddress
+    );
     setData({
       account: connection.selectedAddress,
-      balance: balance.toString(),
+      balance: String(ethers.utils.formatEther(balance.toString())),
       name,
       darkMode,
       year,
@@ -99,23 +127,23 @@ const ContractProvider = ({
 
   const loadNFTs = async (type = "my-assets") => {
     try {
-      switch(type){
-        case 'created-assets':{
-          const items = await fetchMarketItems()
+      switch (type) {
+        case "created-assets": {
+          const items = await fetchMarketItems();
           setNfts(items);
-          return items
+          return items;
         }
-        case 'market-assets':{
-          let items = await fetchMarketItems()
-          items.filter(item => item.owner == "0x0")
+        case "market-assets": {
+          let items = await fetchMarketItems();
+          items.filter((item) => item.owner == "0x0");
           setNfts(items);
-          return items
+          return items;
         }
-        default:{
-          let items = await fetchMarketItems()
-          items.filter(item => item.owner == account)
+        default: {
+          let items = await fetchMarketItems();
+          items.filter((item) => item.owner == account);
           setNfts(items);
-          return items
+          return items;
         }
       }
     } catch (error) {
@@ -132,4 +160,3 @@ const ContractProvider = ({
 };
 const useContract = () => useContext(ContractContext);
 export { ContractProvider, useContract };
-

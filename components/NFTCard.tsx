@@ -2,25 +2,23 @@ import React from "react";
 import Image from "next/image";
 
 import { Button } from ".";
-import { useApp } from "../contexts"
+import { useApp } from "../contexts";
+import { NFT } from "../types";
+import { AiOutlineEllipsis as IEllipsis } from "react-icons/ai";
 
 type NFTCardProps = {
-  nft: {
-    id: string | number
-    image: string;
-    title: string;
-    description: string;
-    price: string;
-  };
+  nft: NFT;
   buyNft: (nft: any) => Promise<void>;
   page?: string;
 };
 const NFTCard = ({ nft, buyNft, page = "index" }: NFTCardProps) => {
-  const { id,image, description, title, price } = nft;
-  const { darkMode } = useApp()
+  const { id, image, name, price, username } = nft;
+  const { darkMode } = useApp();
   return (
-    <div className={`p-4 shadow min-w-300 flex-1 max-w-320 sm:my-4 sm:mr-4 my-0 mr-0 rounded-md bg-[#ee] 
-      ${darkMode && "bg-[#0F0F2B] text-white"}`}>
+    <div
+      className={`p-4 hover:shadow min-w-300 flex-1 max-w-320 sm:my-4 sm:mr-4 my-0 mr-0 rounded-md hover:-translate-y-2 transition-all duration-100
+      ${darkMode && "bg-[#212124] text-white"}`}
+    >
       <Image
         src={image}
         layout="responsive"
@@ -30,12 +28,14 @@ const NFTCard = ({ nft, buyNft, page = "index" }: NFTCardProps) => {
       />
       {page === "index" ? (
         <div className="py-2 text-center">
-          <h1 className="font-bold text-2xl capitalize color-dark-blue">
-            {title} #{id}
-          </h1>
-          <p>Token Id: #{id}</p>
-          <p>Selling For: {price} Eth</p>
-          <p className="text-gray-600 italic">{description}</p>
+          <div className="flex flex-row items-center justify-between mb-2">
+            <h1 className="font-bold capitalize color-dark-blue">
+              {name} #{id}
+            </h1>
+            <IEllipsis className={`text-[#ccc] ${darkMode && "text-white"}`} />
+          </div>
+          <p className="text-[#eee]">@{username.toLocaleLowerCase()}</p>
+          <p className="color-purple font-bold">{price} eth</p>
           <div className="flex flex-row items-center justify-center">
             <Button
               text="Buy NFT"
@@ -47,9 +47,9 @@ const NFTCard = ({ nft, buyNft, page = "index" }: NFTCardProps) => {
       ) : (
         <div className="py-2">
           <h1 className="font-bold text-2xl capitalize color-dark-blue">
-            {title}
+            {name}
           </h1>
-          <p className={`color-teal font-bold ${darkMode && "text-[#ddd]"}`}>{price} Eth</p>
+          <p className="color-purple font-bold">{price} eth</p>
         </div>
       )}
     </div>

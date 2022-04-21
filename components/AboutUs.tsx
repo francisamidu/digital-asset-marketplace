@@ -13,7 +13,7 @@ const AboutUs = () => {
   return (
     <section className={`py-10 bg-[#eee] ${darkMode && "bg-[#13132B]"}`}>
       <div className="md:max-w-screen-lg md:m-auto ">
-        <div className="flex flex-col md:flex-row justify-center items-center mt-5">
+        <div className="flex flex-col md:flex-row justify-center  mt-5">
           <div>
             <div className="bg-white rounded-xl p-4 max-w-[400px] sm:max-w-full">
               <div className="flex flex-row items-center justify-between mb-4">

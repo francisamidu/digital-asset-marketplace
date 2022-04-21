@@ -16,20 +16,11 @@ const MONTHS = [
 
 class Formatter {
   static formatDate(date: number | Date) {
-    const newDate = new Date(date);
+    const newDate = new Date(date.toString());
     const day = DAYS[newDate.getDay()];
     const month = MONTHS[newDate.getMonth()];
     const year = newDate.getFullYear();
     return `${day}, ${month} ${year}`;
-  }
-  static formatNote(note: any) {
-    return {
-      id: note["id"],
-      createdAt: note["createdAt"],
-      deleted: note["deleted"],
-      text: note["text"],
-      pinned: note["pinned"],
-    };
   }
 }
 export default Formatter;

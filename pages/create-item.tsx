@@ -20,7 +20,8 @@ const client = ipfsClient({
 
 const CreateItem = () => {
   const { account, darkMode } = useApp();
-  const [file, setFile] = useState(null);
+  const [category, setCategory] = useState("");
+  const [username, setUsername] = useState("");
   const [item, setItem] = useState({
     name: "",
     description: "",
@@ -28,11 +29,8 @@ const CreateItem = () => {
     price: "",
   });
   const uploadImage = async () => {
-    if (file) {
+    if (item.image) {
       try {
-        const request = await client.add(file);
-        const url = `https://ipfs.infura.io/ipfs/${request.path}`;
-        setItem({ ...item, image: url });
         await uploadNft();
       } catch (error) {
         console.log(error);
@@ -44,23 +42,60 @@ const CreateItem = () => {
       return;
     }
   };
+  // const uploadImage = async () => {
+  //   if (file) {
+  //     try {
+  //       const request = await client.add(file);
+  //       const url = `https://ipfs.infura.io/ipfs/${request.path}`;
+  //       setItem({ ...item, image: url });
+  //       await uploadNft();
+  //     } catch (error) {
+  //       console.log(error);
+  //       toast.error("Whooops!! Image upload error");
+  //       return;
+  //     }
+  //   } else {
+  //     toast.error("Please provide an image");
+  //     return;
+  //   }
+  // };
   const uploadNft = async () => {
-    if (typeof item.image === "string") {
+    if (item.image) {
       try {
         const data = JSON.stringify(item);
-        const request = await client.add(data);
-        await createSale(`https://ipfs.infura.io/ipfs/${request.path}`);
+        // const request = await client.add(data);
+        await createMarketItem("http://localhost:3000");
       } catch (error) {
         console.log(error);
         toast.error("Error uploading file");
         return;
       }
     } else {
+      console.log(item);
       toast.error("Please provide all the fields required");
       return;
     }
   };
-  const createSale = async (uploadedUrl: string) => {
+  // const uploadNft = async () => {
+  //   if (item.image) {
+  //     try {
+  //       const data = JSON.stringify({
+  //         ...item,
+  //         category
+  //       });
+  //       const request = await client.add(data);
+  //       await createSale(`https://ipfs.infura.io/ipfs/${request.path}`);
+  //     } catch (error) {
+  //       console.log(error);
+  //       toast.error("Error uploading file");
+  //       return;
+  //     }
+  //   } else {
+  //     toast.error("Please provide all the fields required");
+  //     return;
+  //   }
+  // };
+  const createMarketItem = async (uploadedUrl: string) => {
     try {
       const modal = new Modal();
       const connection = await modal.connect();
@@ -82,11 +117,13 @@ const CreateItem = () => {
         nftAddress,
         tokenId,
         price,
+        category,
+        username,
+        new Date(),
         {
-          value: listingPrice,
+          value: listingPrice.toString(),
         }
       );
-      console.log(transaction);
       toast.success("Hooray!!NFT minted");
       // router.push("/assets");
     } catch (error) {
@@ -104,6 +141,8 @@ const CreateItem = () => {
       image: "",
       price: "",
     });
+    setCategory("");
+    setUsername("");
   };
   return (
     <section
@@ -122,11 +161,25 @@ const CreateItem = () => {
           value={item.name}
           placeholder="Asset Name"
         />
+        <input
+          type="text"
+          onChange={(event) => setCategory(event.target.value)}
+          className="rounded p-4 h-[38px] w-full mt-2 border-[1px] border-[#eee] outline-none"
+          value={category}
+          placeholder="Asset Category"
+        />
+        <input
+          type="text"
+          onChange={(event) => setUsername(event.target.value)}
+          className="rounded p-4 h-[38px] w-full mt-2 border-[1px] border-[#eee] outline-none"
+          value={username}
+          placeholder="Username"
+        />
         <textarea
           className="bg-inherit p-4 mt-2 border-[1px] border-[#eee] outline-none w-full"
           name=""
           id=""
-          cols={10}
+          cols={8}
           rows={8}
           value={item.description}
           onChange={(event) => {
@@ -146,8 +199,12 @@ const CreateItem = () => {
           id="image"
           className="mt-2 rounded-sm w-full py-2 px-2 border-[1px] border-[#eee]"
           onChange={(event: ChangeEvent<any>) => {
-            setFile(event?.target?.files[0]);
-            console.log(event?.target?.value);
+            const file = event?.target?.files[0];
+            const url = URL.createObjectURL(file);
+            setItem({
+              ...item,
+              image: url,
+            });
           }}
         />
         <Button
