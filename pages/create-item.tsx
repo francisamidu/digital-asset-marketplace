@@ -9,7 +9,7 @@ import { nftAddress, nftMarketAddress } from "../config";
 import NFT from "../artifacts/contracts/NFT.sol/NFT.json";
 import Market from "../artifacts/contracts/NFTMarket.sol/NFTMarket.json";
 import { toast } from "react-toastify";
-import { useApp } from "../contexts";
+import { useApp, useContract } from "../contexts";
 
 const client = ipfsClient({
   apiPath: "/api/v0",
@@ -19,7 +19,7 @@ const client = ipfsClient({
 });
 
 const CreateItem = () => {
-  const { account, darkMode } = useApp();
+  const { darkMode } = useApp();
   const [category, setCategory] = useState("");
   const [username, setUsername] = useState("");
   const [item, setItem] = useState({
@@ -28,81 +28,42 @@ const CreateItem = () => {
     image: "",
     price: "",
   });
-  const uploadImage = async () => {
-    if (item.image) {
-      try {
-        await uploadNft();
-      } catch (error) {
-        console.log(error);
-        toast.error("Whooops!! Image upload error");
-        return;
-      }
-    } else {
-      toast.error("Please provide an image");
+  const createMarketItem = async () => {
+    const isItemFilled = Object.values(item).some((val) => !!val);
+    if (!isItemFilled) {
+      toast.error("Please enter all the fields");
       return;
     }
-  };
-  // const uploadImage = async () => {
-  //   if (file) {
-  //     try {
-  //       const request = await client.add(file);
-  //       const url = `https://ipfs.infura.io/ipfs/${request.path}`;
-  //       setItem({ ...item, image: url });
-  //       await uploadNft();
-  //     } catch (error) {
-  //       console.log(error);
-  //       toast.error("Whooops!! Image upload error");
-  //       return;
-  //     }
-  //   } else {
-  //     toast.error("Please provide an image");
-  //     return;
-  //   }
-  // };
-  const uploadNft = async () => {
-    if (item.image) {
-      try {
-        const data = JSON.stringify(item);
-        // const request = await client.add(data);
-        await createMarketItem("http://localhost:3000");
-      } catch (error) {
-        console.log(error);
-        toast.error("Error uploading file");
-        return;
-      }
-    } else {
-      console.log(item);
-      toast.error("Please provide all the fields required");
-      return;
-    }
-  };
-  // const uploadNft = async () => {
-  //   if (item.image) {
-  //     try {
-  //       const data = JSON.stringify({
-  //         ...item,
-  //         category
-  //       });
-  //       const request = await client.add(data);
-  //       await createSale(`https://ipfs.infura.io/ipfs/${request.path}`);
-  //     } catch (error) {
-  //       console.log(error);
-  //       toast.error("Error uploading file");
-  //       return;
-  //     }
-  //   } else {
-  //     toast.error("Please provide all the fields required");
-  //     return;
-  //   }
-  // };
-  const createMarketItem = async (uploadedUrl: string) => {
     try {
+      //Connect to wallet
       const modal = new Modal();
       const connection = await modal.connect();
       const provider = new ethers.providers.Web3Provider(connection);
       const signer = provider.getSigner();
-      let contract = new ethers.Contract(nftAddress, NFT.abi, signer);
-      let transaction = await contract.createToken(uploadedUrl);
+
+      //Create Contract instances
+      const nftContract = new ethers.Contract(nftAddress, NFT.abi, signer);
+      const nftMarketContract = new ethers.Contract(
+        nftMarketAddress,
+        Market.abi,
+        signer
+      );
+
+      // Upload files
+      const imageRequest = await client.add(item.image);
+      const url = `https://ipfs.infura.io/ipfs/${imageRequest.path}`;
+      setItem({ ...item, image: url });
+
+      const data = JSON.stringify({
+        ...item,
+        category,
+      });
+      const request = await client.add(data);
+      const tokenUri = `https://ipfs.infura.io/ipfs/${request.path}`;
+      await nftMarketContract.createSale(tokenUri);
+
+      //Create token and market listing
+      let transaction = await nftContract.createToken(tokenUri);
       const tx = await transaction.wait();
 
       const tokenId = tx.events[0].args["tokenId"].toNumber();
@@ -110,16 +71,15 @@ const CreateItem = () => {
         item.price.toString(),
         "ether"
       );
-      contract = new ethers.Contract(nftMarketAddress, Market.abi, signer);
-      const listingPrice = await contract.getListingPrice();
+      const listingPrice = await nftMarketContract.getListingPrice();
 
-      transaction = await contract.createMarketItem(
+      transaction = await nftMarketContract.createMarketItem(
         nftAddress,
         tokenId,
         price,
         category,
         username,
-        new Date(),
+        Date.now(),
         {
           value: listingPrice.toString(),
         }
@@ -134,7 +94,7 @@ const CreateItem = () => {
   };
   const handleSubmit = async (event) => {
     event.preventDefault();
-    await uploadImage();
+    await createMarketItem();
     setItem({
       name: "",
       description: "",

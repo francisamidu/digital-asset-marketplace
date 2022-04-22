@@ -1,34 +1,30 @@
-import { ethers } from "ethers";
 import { NextComponentType } from "next";
 import React, { useEffect, useState } from "react";
 import { Layout, NFTList } from "../components";
-import Modal from "web3modal";
-import { nftAddress, nftMarketAddress } from "../config";
-import NFT from "../artifacts/contracts/NFT.sol/NFT.json";
-import Market from "../artifacts/contracts/NFTMarket.sol/NFTMarket.json";
-import { useApp, useContract } from "../contexts"
+import { useApp, useContract } from "../contexts";
 
 const Assets = () => {
   const [assets, setAssets] = useState([]);
-  const { darkMode } = useApp()
+  const { darkMode } = useApp();
   const { loadNFTs } = useContract();
 
   const loadAssets = async () => {
     try {
-      const items = await loadNFTs()
-    }catch{
-      console.log("Whoops")
+      const items = await loadNFTs();
+      setAssets(items);
+    } catch {
+      console.log("Whoops");
     }
-  }
+  };
 
   useEffect(() => {
     loadAssets();
   }, [undefined]);
   return (
     <section className={`${darkMode && "bg-[#040D20]"}`}>
-     <NFTList page="assets" assets={assets} />;
+      <NFTList page="assets" assets={assets} />;
     </section>
-  )
+  );
 };
 
 Assets.getLayout = (page: NextComponentType) => <Layout>{page}</Layout>;

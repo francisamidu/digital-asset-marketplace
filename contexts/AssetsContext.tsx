@@ -7,7 +7,6 @@ import React, {
   SetStateAction,
   Dispatch,
 } from "react";
-import { uid } from "../helpers";
 import Asset from "../types/Asset";
 
 const AssetsContext = createContext<{

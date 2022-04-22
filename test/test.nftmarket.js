@@ -7,9 +7,10 @@ describe("NFTMarket", () => {
     const market = await Market.deploy();
     await market.deployed();
     const marketAddress = market.address;
+    const [signer] = await ethers.getSigners();
 
     const NFT = await ethers.getContractFactory("NFT");
-    const nft = await NFT.deploy(marketAddress);
+    const nft = await NFT.connect(signer).deploy(marketAddress);
     await nft.deployed();
     const nftAddress = nft.address;
 
@@ -18,15 +19,32 @@ describe("NFTMarket", () => {
 
     let auctionPrice = ethers.utils.parseUnits("100", "ether");
 
-    await nft.createToken("https://www.token.com");
-    await nft.createToken("https://www.token1.com");
+    await nft.connect(signer).createToken("https://www.token.com");
+    await nft.connect(signer).createToken("https://www.token1.com");
 
-    await market.createMarketItem(nftAddress, 1, auctionPrice, {
-      value: listingPrice,
-    });
-    await market.createMarketItem(nftAddress, 2, auctionPrice, {
-      value: listingPrice,
-    });
+    await market.createMarketItem(
+      nftAddress,
+      1,
+      auctionPrice,
+      "NFT",
+      "User",
+      Date.now(),
+      {
+        value: listingPrice,
+      }
+    );
+
+    await market.createMarketItem(
+      nftAddress,
+      1,
+      auctionPrice,
+      "NFT",
+      "User",
+      Date.now(),
+      {
+        value: listingPrice,
+      }
+    );
 
     const [_, buyerAddress] = await ethers.getSigners();
 
@@ -34,13 +52,13 @@ describe("NFTMarket", () => {
       .connect(buyerAddress)
       .createMarketSale(nftAddress, 1, { value: auctionPrice });
 
-    let itemIds = await market._itemIds()
-    itemIds = itemIds.toString()
-    const items = []
+    let itemIds = await market._itemIds();
+    itemIds = itemIds.toString();
+    const items = [];
 
     for (let id = 0; id <= itemIds; id++) {
-      if (id) {        
-        let item = await market.idToMarketItem(id);        
+      if (id) {
+        let item = await market.idToMarketItem(id);
         const tokenUri = await nft.tokenURI(item.tokenId);
         const newItem = {
           price: item.price.toString(),
@@ -52,6 +70,6 @@ describe("NFTMarket", () => {
         items.push(newItem);
       }
     }
-    console.log(items)
+    console.log(items);
   });
 });

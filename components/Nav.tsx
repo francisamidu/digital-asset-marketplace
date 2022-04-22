@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { uid } from "../helpers";
 import { useApp } from "../contexts";
 import Link from "next/link";
@@ -47,9 +47,9 @@ const Nav = () => {
     year,
     setData,
   } = useApp();
-  const balance = Number(
-    accountBalance.length > 5 ? accountBalance.slice(0, 5) : accountBalance
-  );
+  const [balance, setBalance] = useState<number | string>("");
+  const [address, setAddress] = useState("");
+
   const setLinkState = (id: string) => {
     setLinks(
       links.map((link) => {
@@ -62,11 +62,29 @@ const Nav = () => {
       })
     );
   };
-  const trimmedAddress = `${account.slice(0, 5)}...${account.slice(
-    account.length - 5,
-    account.length
-  )}`;
+
   const [showMenu, setShowMenu] = useState(false);
+
+  useEffect(() => {
+    if (balance) {
+      setBalance(
+        Number(
+          accountBalance.length > 5
+            ? accountBalance.slice(0, 5)
+            : accountBalance
+        )
+      );
+    }
+    if (account) {
+      setAddress(
+        `${account.slice(0, 5)}...${account.slice(
+          account.length - 5,
+          account.length
+        )}`
+      );
+    }
+  }, [accountBalance, account]);
+
   return (
     <section
       className={`bg-white ${darkMode && "bg-[#040B1A]"} ${
@@ -110,10 +128,13 @@ const Nav = () => {
           )}
           <div className="sm:flex flex-row items-center">
             <span className={`font-bold mr-6 ${darkMode && "text-white"}`}>
-              {balance.toString().length > 4 ? millify(balance) : balance} ETH
+              {balance.toString().length > 4
+                ? millify(Number(balance))
+                : balance}{" "}
+              ETH
             </span>
             <span className="font-bold text-[#4552A8] bg-[#eee] rounded-md py-2 p-3">
-              {trimmedAddress}
+              {address}
             </span>
             <Moon
               className={`ml-3 text-2xl cursor-pointer ${

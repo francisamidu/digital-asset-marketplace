@@ -29,7 +29,7 @@ contract NFTMarket is ReentrancyGuard {
         bool sold;
         string category;
         string username;
-        string timestamp;
+        uint256 timestamp;
     }
 
     modifier isOwner{
@@ -49,7 +49,7 @@ contract NFTMarket is ReentrancyGuard {
         bool sold,
         string category,
         string username,
-        string timestamp
+        uint256 timestamp
     );
 
     event MarketItemSold (
@@ -70,10 +70,11 @@ contract NFTMarket is ReentrancyGuard {
         uint256 price,
         string memory _category,
         string memory _username,
-        string _timestamp
+        uint256 _timestamp
     ) public payable nonReentrant {
         require(price > 0, "Price must be at least 1 wei");
         require(msg.value == listingPrice, "Price must be equal to the listing price");
+        IERC721(nftContractAddress).transferFrom(msg.sender, address(this), tokenId);
 
         _itemIds++;
         uint256 itemId = _itemIds;
@@ -91,7 +92,6 @@ contract NFTMarket is ReentrancyGuard {
             _timestamp
         );
 
-        IERC721(nftContractAddress).transferFrom(msg.sender, address(this), tokenId);
 
         emit MarketItemCreated(
             itemId,
