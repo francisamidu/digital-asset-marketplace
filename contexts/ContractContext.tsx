@@ -72,9 +72,10 @@ const ContractProvider = ({
 
   const makeConnection = async () => {
     try {
-      const provider = new ethers.providers.JsonRpcProvider(
-        `https://ropsten.infura.io/v3/${process.env.INFURA_ID}`
-      );
+      const provider = new ethers.providers.JsonRpcProvider();
+      // const provider = new ethers.providers.JsonRpcProvider(
+      //   `https://ropsten.infura.io/v3/${process.env.INFURA_ID}`
+      // );
       const signer = provider.getSigner();
       const nftContract = new ethers.Contract(nftAddress, nftABI, provider);
       const nftMarketContract = new ethers.Contract(

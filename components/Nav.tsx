@@ -133,7 +133,7 @@ const Nav = () => {
                 : balance}{" "}
               ETH
             </span>
-            <span className="font-bold text-[#4552A8] bg-[#eee] rounded-md py-2 p-3">
+            <span className={`font-bold text-[#4552A8] bg-[#eee] ${darkMode && "bg-[#4552A8] text-[#eee]"} rounded-md py-2 p-3 `}>
               {address}
             </span>
             <Moon

@@ -2,8 +2,8 @@
 // const nftMarketAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
 // Production addresses
-const nftAddress = "0x5bd3D33467764746222c327A4C3D4e0107B15b39";
-const nftMarketAddress = "0xC937D9Af0eb750e426D28dA51A59eAcB0Cc1E814";
+const nftAddress = "0x9A676e781A523b5d0C0e43731313A708CB607508";
+const nftMarketAddress = "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82";
 
 import nftAbi from "./artifacts/contracts/NFT.sol/NFT.json";
 import nftMarketAbi from "./artifacts/contracts/NFTMarket.sol/NFTMarket.json";

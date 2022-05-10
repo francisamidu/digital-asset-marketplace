@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "E:\\Genius\\Dev\\web\\blockchain-projects\\digital-asset-marketplace\\contracts\\NFT.sol": {
-      "lastModificationDate": 1648757224293,
-      "contentHash": "a32a71610a7723ed205a11a59c03d044",
+      "lastModificationDate": 1652177755206,
+      "contentHash": "92bf8c07f3e97cfd81591c9047c8cd7e",
       "sourceName": "contracts/NFT.sol",
       "solcConfig": {
         "version": "0.8.11",
@@ -31,8 +31,7 @@
       "imports": [
         "@openzeppelin/contracts/token/ERC721/ERC721.sol",
         "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
-        "@openzeppelin/contracts/utils/Counters.sol",
-        "hardhat/console.sol"
+        "@openzeppelin/contracts/utils/Counters.sol"
       ],
       "versionPragmas": [
         "0.8.11"

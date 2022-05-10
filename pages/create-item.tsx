@@ -12,10 +12,9 @@ import { toast } from "react-toastify";
 import { useApp, useContract } from "../contexts";
 
 const client = ipfsClient({
-  apiPath: "/api/v0",
-  host: "ipfs.infura.io",
+  host: "localhost",
   port: 5001,
-  protocol: "https",
+  protocol: "http",
 });
 
 const CreateItem = () => {
@@ -51,7 +50,7 @@ const CreateItem = () => {
 
       // Upload files
       const imageRequest = await client.add(item.image);
-      const url = `https://ipfs.infura.io/ipfs/${imageRequest.path}`;
+      const url = `http://localhost:8080/ipfs/${imageRequest.path}`;
       setItem({ ...item, image: url });
 
       const data = JSON.stringify({
@@ -59,11 +58,9 @@ const CreateItem = () => {
         category,
       });
       const request = await client.add(data);
-      const tokenUri = `https://ipfs.infura.io/ipfs/${request.path}`;
-      await nftMarketContract.createSale(tokenUri);
 
       //Create token and market listing
-      let transaction = await nftContract.createToken(tokenUri);
+      let transaction = await nftContract.createToken(request.path);
       const tx = await transaction.wait();
 
       const tokenId = tx.events[0].args["tokenId"].toNumber();
