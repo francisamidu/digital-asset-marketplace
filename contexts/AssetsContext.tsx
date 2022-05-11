@@ -10,20 +10,38 @@ import React, {
 import Asset from "../types/Asset";
 
 const AssetsContext = createContext<{
-  nfts: Asset[];
-  setNfts: Dispatch<SetStateAction<Asset[]>>;
+  assets: {
+    createdAssets: Asset[];
+    marketAssets: Asset[];
+    myAssets: Asset[];
+  };
+  setAssets: Dispatch<
+    SetStateAction<{
+      createdAssets: Asset[];
+      marketAssets: Asset[];
+      myAssets: Asset[];
+    }>
+  >;
 }>({
-  nfts: [],
-  setNfts: () => {},
+  assets: {
+    createdAssets: [],
+    marketAssets: [],
+    myAssets: [],
+  },
+  setAssets: () => {},
 });
 
 export const AssetsContextProvider = ({
   children,
 }: PropsWithChildren<ReactNode>) => {
-  const [nfts, setNfts] = useState([]);
+  const [assets, setAssets] = useState({
+    createdAssets: [],
+    marketAssets: [],
+    myAssets: [],
+  });
 
   return (
-    <AssetsContext.Provider value={{ nfts, setNfts }}>
+    <AssetsContext.Provider value={{ assets, setAssets }}>
       {children}
     </AssetsContext.Provider>
   );

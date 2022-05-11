@@ -13,13 +13,13 @@ import { toast } from "react-toastify";
 import { formatDate } from "../helpers";
 
 const ContractContext = createContext<{
-  loadNFTs: (assets?: string) => any;
+  loadAssets: () => Promise<any>;
 }>(null);
 const ContractProvider = ({
   children,
 }: PropsWithChildren<Partial<ReactNode>>) => {
-  const { setNfts } = useAssets();
-  const { account, name, darkMode, year, setData } = useApp();
+  const { setAssets } = useAssets();
+  const { account, setAccount, setBalance, setNetworkId } = useApp();
   const [nftMarketContract, setNftMarketContract] = useState(null);
   const [nftContract, setNftContract] = useState(null);
 
@@ -30,7 +30,7 @@ const ContractProvider = ({
 
   useEffect(() => {
     if (nftContract && nftMarketContract) {
-      loadNFTs();
+      loadAssets();
     }
   }, [nftContract, nftMarketContract]);
 
@@ -46,13 +46,12 @@ const ContractProvider = ({
           const tokenUri = await nftContract?.tokenURI(item.tokenId);
           const request = await fetch(tokenUri);
           const meta = await request.json();
-          const price = ethers.utils.parseUnits(item.price.toString(), "ether");
           const newItem = {
             category: item.category,
             image: meta.image,
             name: meta.name,
             description: meta.description,
-            price,
+            price: ethers.utils.formatEther(item.price),
             tokenId: item.tokenId.toString(),
             owner: item.owner,
             seller: item.seller,
@@ -83,50 +82,36 @@ const ContractProvider = ({
         nftMarketABI,
         signer
       );
+
+      const chainId = await (await provider.getNetwork()).chainId;
       const signerAddress = await signer.getAddress();
       const accountBalance = (
         await provider.getBalance(signerAddress)
       ).toString();
-      setAppFields(signerAddress, accountBalance);
+
+      setAccount(signerAddress);
+      setBalance(accountBalance);
       setNftContract(nftContract);
       setNftMarketContract(nftMarketContract);
+      setNetworkId(chainId);
+
+      loadAssets();
     } catch (error) {
       console.log(error);
       toast.error("Error: Retrieving data failed. Try reloading the page");
     }
   };
 
-  const setAppFields = async (address: string, balance: string) => {
-    setData({
-      account: address,
-      balance,
-      name,
-      darkMode,
-      year,
-    });
-  };
-
-  const loadNFTs = async (type = "my-assets") => {
+  const loadAssets = async () => {
     try {
-      switch (type) {
-        case "created-assets": {
-          const items = await fetchMarketItems();
-          setNfts(items);
-          return items;
-        }
-        case "market-assets": {
-          let items = await fetchMarketItems();
-          items.filter((item) => item.owner == "0x0");
-          setNfts(items);
-          return items;
-        }
-        default: {
-          let items = await fetchMarketItems();
-          items.filter((item) => item.owner == account);
-          setNfts(items);
-          return items;
-        }
-      }
+      const createdItems = await fetchMarketItems();
+      const marketItems = createdItems.filter((item) => item.owner == "0x0");
+      const myItems = createdItems.filter((item) => item.owner == account);
+      setAssets({
+        createdAssets: createdItems,
+        marketAssets: marketItems,
+        myAssets: myItems,
+      });
     } catch (error) {
       toast.error("Something went wrong. Check your internet");
       console.log(error);
@@ -134,7 +119,7 @@ const ContractProvider = ({
   };
 
   return (
-    <ContractContext.Provider value={{ loadNFTs }}>
+    <ContractContext.Provider value={{ loadAssets }}>
       {children}{" "}
     </ContractContext.Provider>
   );

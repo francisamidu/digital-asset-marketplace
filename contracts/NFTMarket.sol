@@ -55,7 +55,7 @@ contract NFTMarket is ReentrancyGuard {
     event MarketItemSold (
         uint indexed itemId,
         uint256 indexed tokenId,
-        address payable sellers        
+        address payable buyer        
     );
 
     event BalanceWithdrawn(address user, uint256 _balance);

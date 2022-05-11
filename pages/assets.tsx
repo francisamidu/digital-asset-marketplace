@@ -6,30 +6,38 @@ import { ethers } from "ethers";
 import { nftAddress, nftMarketAddress } from "../config";
 import Market from "../artifacts/contracts/NFTMarket.sol/NFTMarket.json";
 import { useApp, useContract } from "../contexts";
+import { toast } from "react-toastify";
+import { Asset } from "../types";
 
 const Assets = () => {
-  const { loadNFTs } = useContract();
-  const { setData,darkMode } = useApp();
-  const buyNft = async (nft) => {
+  const { loadAssets } = useContract();
+  const { darkMode } = useApp();
+  const buyNft = async (nft: Asset) => {
     const modal = new Modal();
     const connection = await modal.connect();
     const provider = new ethers.providers.Web3Provider(connection);
     const signer = provider.getSigner();
     const contract = new ethers.Contract(nftMarketAddress, Market.abi, signer);
-    const price = await ethers.utils.parseUnits(nft.price.toString(), "ether");
-    const transaction = await contract.createMarketSale(nftAddress, nft.id, {
-      value: price,
-    });
-    await transaction.wait();
-    loadNFTs("market-assets");
+    const price = ethers.utils.parseEther(String(nft.price));
+    const transaction = await contract.createMarketSale(
+      nftAddress,
+      nft.tokenId,
+      {
+        value: price,
+      }
+    );
+    const tx = await transaction.wait();
+    console.log(tx);
+    toast.success("You own a new NFT!!");
+    loadAssets();
   };
-  useEffect(() => {
-    loadNFTs();
-  }, [undefined]);
+
   return (
-    <section className={`${darkMode && "bg-[#040D20]"} min-h-screen`}>
-     <NFTList page="assets" buyNft={buyNft} />;
-    </section>
+    <main className={`${darkMode && "bg-[#040D20]"} min-h-[94vh] pt-20`}>
+      <section className="sm:max-w-screen-xl sm:mx-auto">
+        <NFTList page="assets" buyNft={buyNft} />
+      </section>
+    </main>
   );
 };
 

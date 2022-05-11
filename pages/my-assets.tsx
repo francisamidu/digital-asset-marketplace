@@ -1,28 +1,19 @@
 import { NextComponentType } from "next";
 import React, { useEffect, useState } from "react";
 import { Layout, NFTList } from "../components";
-import { useApp, useContract } from "../contexts";
+import { useApp, useAssets } from "../contexts";
 
 const Assets = () => {
   const [assets, setAssets] = useState([]);
   const { darkMode } = useApp();
-  const { loadNFTs } = useContract();
-
-  const loadAssets = async () => {
-    try {
-      const items = await loadNFTs();
-      setAssets(items);
-    } catch {
-      console.log("Whoops");
-    }
-  };
+  const { assets: tempAssets } = useAssets();
 
   useEffect(() => {
-    loadAssets();
-  }, [undefined]);
+    setAssets(tempAssets.myAssets);
+  }, [tempAssets]);
   return (
     <section className={`${darkMode && "bg-[#040D20]"}`}>
-      <NFTList page="assets" assets={assets} />;
+      <NFTList page="assets" assets={assets} />
     </section>
   );
 };

@@ -442,8 +442,8 @@
       ]
     },
     "E:\\Genius\\Dev\\web\\blockchain-projects\\digital-asset-marketplace\\contracts\\NFTMarket.sol": {
-      "lastModificationDate": 1650620317729,
-      "contentHash": "1ecbe8d1a9d8904bc0cb0dbcb67133a9",
+      "lastModificationDate": 1652181111065,
+      "contentHash": "abd2280be380e23a69c05fc5db037cf9",
       "sourceName": "contracts/NFTMarket.sol",
       "solcConfig": {
         "version": "0.8.11",

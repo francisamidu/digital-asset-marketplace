@@ -11,6 +11,7 @@
 .color-teal {
   color: var(--color-primary);
 }
+
 .bg-teal {
   background: var(--color-primary);
 }
@@ -22,6 +23,7 @@
 .color-primary-secondary {
   color: var(--color-primary-secondary);
 }
+
 * {
   font-family: "FreeSans";
 }
@@ -29,6 +31,7 @@
 a {
   outline: none !important;
 }
+
 .link-active {
   &:after {
     content: "";
@@ -42,14 +45,34 @@ a {
     transition: background-color 0.75s linear;
   }
 }
+
 .intro-image {
   background-image: url("/29932.jpg");
   background-size: cover;
   background-position: center;
 }
-.feature{
-  &:hover{
+
+.feature {
+  &:hover {
     transition: .5s ease-out;
-    transform:scale(1.1);
+    transform: scale(1.1);
+  }
+}
+
+.nft-list {
+  grid-template-columns: repeat(auto-fit, minmax(300px, max-content));
+  grid-auto-rows: max-content;
+  gap: 0.45em;
+}
+
+@media screen and (max-width:651px) {
+
+  .nft-list {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 350px));
+    justify-content: center;
+
+    .nft-item {
+      grid-column: 1 / 2;
+    }
   }
 }

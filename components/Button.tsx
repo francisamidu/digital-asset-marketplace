@@ -20,7 +20,7 @@ const Button = ({
 
   return (
     <button
-      className="cursor-pointer w-max h-12 px-8 py-2 mt-4 rounded-lg text-inter text-white flex flex-row items-center justify-center transition duration-500 outline-none bg-[#4552A8] hover:bg-[#3f4b99]"
+      className={`cursor-pointer h-12 px-8 py-2 mt-4 rounded-lg text-inter text-white flex flex-row items-center justify-center transition duration-500 outline-none bg-[#4552A8] hover:bg-[#3f4b99] ${className}`}
       onClick={handleClick}
       type={type}
     >

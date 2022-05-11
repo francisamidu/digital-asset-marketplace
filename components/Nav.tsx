@@ -5,6 +5,7 @@ import Link from "next/link";
 import { IoMenu as IMenu } from "react-icons/io5";
 import { IoIosMoon as Moon } from "react-icons/io";
 import millify from "millify";
+import { ethers } from "ethers";
 
 const Nav = () => {
   const [links, setLinks] = useState([
@@ -43,12 +44,14 @@ const Nav = () => {
     account,
     balance: accountBalance,
     name,
+    networkId,
     darkMode,
     year,
     setData,
   } = useApp();
   const [balance, setBalance] = useState<number | string>("");
   const [address, setAddress] = useState("");
+  const [symbol, setSymbol] = useState("");
 
   const setLinkState = (id: string) => {
     setLinks(
@@ -66,14 +69,8 @@ const Nav = () => {
   const [showMenu, setShowMenu] = useState(false);
 
   useEffect(() => {
-    if (balance) {
-      setBalance(
-        Number(
-          accountBalance.length > 5
-            ? accountBalance.slice(0, 5)
-            : accountBalance
-        )
-      );
+    if (accountBalance) {
+      setBalance(Math.floor(Number(ethers.utils.formatEther(accountBalance))));
     }
     if (account) {
       setAddress(
@@ -83,7 +80,19 @@ const Nav = () => {
         )}`
       );
     }
-  }, [accountBalance, account]);
+
+    switch (networkId) {
+      case 97: {
+        setSymbol("Bnb");
+      }
+      case 137: {
+        setSymbol("Matic");
+      }
+      default: {
+        setSymbol("Eth");
+      }
+    }
+  }, [accountBalance, account, networkId]);
 
   return (
     <section
@@ -127,13 +136,19 @@ const Nav = () => {
             </div>
           )}
           <div className="sm:flex flex-row items-center">
-            <span className={`font-bold mr-6 ${darkMode && "text-white"}`}>
+            <span
+              className={`font-bold text-sm mr-6 ${darkMode && "text-white"}`}
+            >
               {balance.toString().length > 4
                 ? millify(Number(balance))
                 : balance}{" "}
-              ETH
+              {symbol}
             </span>
-            <span className={`font-bold text-[#4552A8] bg-[#eee] ${darkMode && "bg-[#4552A8] text-[#eee]"} rounded-md py-2 p-3 `}>
+            <span
+              className={`font-bold text-[#4552A8] bg-[#eee] ${
+                darkMode && "bg-[#4552A8] text-[#eee]"
+              } rounded-md py-2 p-3 `}
+            >
               {address}
             </span>
             <Moon
@@ -142,8 +157,6 @@ const Nav = () => {
               }`}
               onClick={() =>
                 setData({
-                  account,
-                  balance: accountBalance,
                   name,
                   darkMode: !darkMode,
                   year,
