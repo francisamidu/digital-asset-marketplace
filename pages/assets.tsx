@@ -27,7 +27,6 @@ const Assets = () => {
       }
     );
     const tx = await transaction.wait();
-    console.log(tx);
     toast.success("You own a new NFT!!");
     loadAssets();
   };

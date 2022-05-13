@@ -11,6 +11,7 @@ import { nftAddress, nftMarketAddress, nftABI, nftMarketABI } from "../config";
 import { useAssets, useApp } from ".";
 import { toast } from "react-toastify";
 import { formatDate } from "../helpers";
+import getConfig from "next/config"
 
 const ContractContext = createContext<{
   loadAssets: () => Promise<any>;
@@ -19,6 +20,7 @@ const ContractProvider = ({
   children,
 }: PropsWithChildren<Partial<ReactNode>>) => {
   const { setAssets } = useAssets();
+  const { publicRuntimeConfig } = getConfig()  
   const { account, setAccount, setBalance, setNetworkId } = useApp();
   const [nftMarketContract, setNftMarketContract] = useState(null);
   const [nftContract, setNftContract] = useState(null);
@@ -70,11 +72,10 @@ const ContractProvider = ({
   };
 
   const makeConnection = async () => {
-    try {
-      const provider = new ethers.providers.JsonRpcProvider();
-      // const provider = new ethers.providers.JsonRpcProvider(
-      //   `https://ropsten.infura.io/v3/${process.env.INFURA_ID}`
-      // );
+    try {      
+      const provider = new ethers.providers.JsonRpcProvider(
+        `https://ropsten.infura.io/v3/${publicRuntimeConfig.INFURA_ID}`
+      );
       const signer = provider.getSigner();
       const nftContract = new ethers.Contract(nftAddress, nftABI, provider);
       const nftMarketContract = new ethers.Contract(

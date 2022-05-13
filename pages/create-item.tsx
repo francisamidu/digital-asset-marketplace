@@ -11,9 +11,10 @@ import { toast } from "react-toastify";
 import { useApp } from "../contexts";
 
 const client = ipfsClient({
-  host: "localhost",
+  apiPath:"/api/v0",
+  host: "ipfs.infura.io",
   port: 5001,
-  protocol: "http",
+  protocol: "https",
 });
 
 const CreateItem = () => {
