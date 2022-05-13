@@ -15,7 +15,7 @@ contract NFT is ERC721URIStorage  {
     }
 
     function _baseURI() internal pure override returns (string memory baseURI) {
-        return "http://localhost:8080/ipfs/";
+        return "http://gateway.ipfs.io/ipfs/";
     }   
 
     function createToken(string memory _tokenURI) public returns (uint tokenId) {
